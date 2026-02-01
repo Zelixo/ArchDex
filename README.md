@@ -24,7 +24,7 @@ A Pokedex application built with Python and GTK, designed to work seamlessly in 
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/ArchDex.git
+    git clone https://github.com/Zelixo/ArchDex.git
     cd ArchDex
     ```
 
