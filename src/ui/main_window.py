@@ -1,5 +1,6 @@
 import gi
 import threading
+from typing import List, Optional, Any
 from sqlalchemy.orm import joinedload
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GdkPixbuf, GLib, Gio
@@ -11,8 +12,15 @@ from .detail_view import DetailView
 from ..data.database import is_pokemon_data_complete, update_pokemon_data, get_session
 from ..data.models import Pokemon, PokemonType, PokemonAbility, PokemonMove, Move
 
+from ..config import (
+    ITEMS_PER_PAGE,
+    POKEMON_LIST_ICON_WIDTH,
+    POKEMON_LIST_ICON_HEIGHT,
+    SIDEBAR_WIDTH_REQUEST
+)
+
 class PokemonListItem(Gtk.ListBoxRow):
-    def __init__(self, pokemon_data):
+    def __init__(self, pokemon_data: Pokemon) -> None:
         super().__init__()
         self.pokemon_data = pokemon_data
 
@@ -25,7 +33,7 @@ class PokemonListItem(Gtk.ListBoxRow):
         hbox.pack_start(self.image, False, False, 0)
         
         # Load image in a background thread
-        image_executor.submit(_load_image_in_thread, self.image, pokemon_data.sprite_url, 48, 48)
+        image_executor.submit(_load_image_in_thread, self.image, pokemon_data.sprite_url, POKEMON_LIST_ICON_WIDTH, POKEMON_LIST_ICON_HEIGHT)
 
         label = Gtk.Label(label=pokemon_data.name.capitalize())
         label.set_xalign(0)
@@ -33,7 +41,7 @@ class PokemonListItem(Gtk.ListBoxRow):
 
 
 class MainWindow(Gtk.Box):
-    def __init__(self, app_instance, *args, **kwargs):
+    def __init__(self, app_instance: Any, *args: Any, **kwargs: Any) -> None:
         super().__init__(orientation=Gtk.Orientation.HORIZONTAL, spacing=0, *args, **kwargs)
         self.app_instance = app_instance
         
@@ -44,7 +52,7 @@ class MainWindow(Gtk.Box):
         self.pack_start(self.sidebar_revealer, False, False, 0)
 
         self.sidebar = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
-        self.sidebar.set_size_request(250, -1)
+        self.sidebar.set_size_request(SIDEBAR_WIDTH_REQUEST, -1)
         self.sidebar_revealer.add(self.sidebar)
 
         # Search Entry (moved from HeaderBar to Sidebar)
@@ -79,9 +87,9 @@ class MainWindow(Gtk.Box):
         self.pack_start(self.detail_view, True, True, 0)
 
         # Pagination attributes
-        self.current_page = 1
-        self.items_per_page = 50  # Increased for better use of space
-        self.total_pokemon_count = 0
+        self.current_page: int = 1
+        self.items_per_page: int = ITEMS_PER_PAGE  # Increased for better use of space
+        self.total_pokemon_count: int = 0
 
         # Pagination controls
         self.pagination_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
@@ -109,16 +117,16 @@ class MainWindow(Gtk.Box):
         self.last_button.connect("clicked", self.on_last_page)
         self.pagination_box.pack_start(self.last_button, False, False, 0)
 
-    def toggle_sidebar(self):
+    def toggle_sidebar(self) -> None:
         is_revealed = self.sidebar_revealer.get_reveal_child()
         self.sidebar_revealer.set_reveal_child(not is_revealed)
 
-    def on_pokemon_selected(self, listbox, row):
+    def on_pokemon_selected(self, listbox: Gtk.ListBox, row: Gtk.ListBoxRow) -> None:
         if isinstance(row, PokemonListItem):
             pokemon_data = row.pokemon_data
             
             # Use a thread to check and update/show pokemon
-            def check_and_show():
+            def check_and_show() -> None:
                 session = get_session()
                 try:
                     # Re-fetch pokemon with relations
@@ -141,7 +149,7 @@ class MainWindow(Gtk.Box):
 
             threading.Thread(target=check_and_show, daemon=True).start()
 
-    def update_pokemon_list(self, pokemon_data_list, total_count):
+    def update_pokemon_list(self, pokemon_data_list: List[Pokemon], total_count: int) -> None:
         # Clear existing list
         self.pokemon_list_box.foreach(lambda row: self.pokemon_list_box.remove(row))
         self.total_pokemon_count = total_count
@@ -156,7 +164,7 @@ class MainWindow(Gtk.Box):
         self.pokemon_list_box.show_all()
         self._update_pagination_ui()
 
-    def _update_pagination_ui(self):
+    def _update_pagination_ui(self) -> None:
         total_pages = (self.total_pokemon_count + self.items_per_page - 1) // self.items_per_page
         self.page_label.set_text(f"{self.current_page} / {max(1, total_pages)}")
         self.first_button.set_sensitive(self.current_page > 1)
@@ -164,23 +172,23 @@ class MainWindow(Gtk.Box):
         self.next_button.set_sensitive(self.current_page < total_pages)
         self.last_button.set_sensitive(self.current_page < total_pages)
 
-    def on_first_page(self, button):
+    def on_first_page(self, button: Gtk.Button) -> None:
         if self.current_page != 1:
             self.current_page = 1
             self.app_instance.on_search_changed(self.search_entry)
 
-    def on_prev_page(self, button):
+    def on_prev_page(self, button: Gtk.Button) -> None:
         if self.current_page > 1:
             self.current_page -= 1
             self.app_instance.on_search_changed(self.search_entry)
 
-    def on_next_page(self, button):
+    def on_next_page(self, button: Gtk.Button) -> None:
         total_pages = (self.total_pokemon_count + self.items_per_page - 1) // self.items_per_page
         if self.current_page < total_pages:
             self.current_page += 1
             self.app_instance.on_search_changed(self.search_entry)
 
-    def on_last_page(self, button):
+    def on_last_page(self, button: Gtk.Button) -> None:
         total_pages = (self.total_pokemon_count + self.items_per_page - 1) // self.items_per_page
         if self.current_page != total_pages:
             self.current_page = total_pages

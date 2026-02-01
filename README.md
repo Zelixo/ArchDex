@@ -14,10 +14,13 @@ A Pokedex application built with Python and GTK, designed to work seamlessly in 
 
 ### Prerequisites
 
-*   Python 3.x
+*   Python 3.8+
 *   GTK 3 development files (e.g., `libgtk-3-dev` on Debian/Ubuntu, `gtk3-devel` on Fedora)
+*   GObject Introspection (e.g., `python3-gi`, `libgirepository1.0-dev`)
 
-### Development Setup
+### Installation
+
+#### From Source (Recommended for Development)
 
 1.  **Clone the repository:**
     ```bash
@@ -25,17 +28,31 @@ A Pokedex application built with Python and GTK, designed to work seamlessly in 
     cd ArchDex
     ```
 
-2.  **Create a virtual environment and install dependencies:**
+2.  **Install in editable mode:**
     ```bash
-    python3 -m venv venv
-    source venv/bin/activate
-    pip install -r requirements.txt
+    pip install -e .
     ```
+
+#### Native Arch Linux (AUR)
+
+If you are on Arch Linux, you can build the package using the provided `PKGBUILD`:
+
+```bash
+makepkg -si
+```
 
 ### Running the Application
 
+After installation, you can run the app directly:
+
 ```bash
-python3 src/main.py
+archdex
+```
+
+Or via Python:
+
+```bash
+python3 -m src.main
 ```
 
 ## Project Structure

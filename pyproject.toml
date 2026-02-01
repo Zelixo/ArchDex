@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "archdex"
+version = "0.1.0"
+authors = [
+  { name="Miles", email="your.email@example.com" },
+]
+description = "A Pokedex application for aarch64 Linux with Hyprland"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+]
+dependencies = [
+    "PyGObject",
+    "requests",
+    "notify2",
+    "dbus-python",
+    "SQLAlchemy",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/your-username/ArchDex"
+"Bug Tracker" = "https://github.com/your-username/ArchDex/issues"
+
+[project.scripts]
+archdex = "archdex.main:main"
+
+[tool.setuptools.package-data]
+"archdex" = ["assets/**/*", "data/**/*"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"

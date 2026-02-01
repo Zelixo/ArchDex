@@ -8,9 +8,8 @@ import time
 
 from .models import Base, Pokemon, Type, PokemonType, Ability, PokemonAbility, Region, Move, PokemonMove
 from .api import get_regions, get_all_pokemon_species_names, get_pokemon_details, get_type_details, get_ability_details, get_move_details, get_species_details, get_species_varieties
+from ..config import DATABASE_PATH
 
-DATABASE_FILE = "pokedex.db"
-DATABASE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data", DATABASE_FILE)
 SQLALCHEMY_DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
 
 engine = create_engine(
