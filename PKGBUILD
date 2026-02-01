@@ -7,16 +7,16 @@ url="https://github.com/Zelixo/ArchDex"
 license=('MIT')
 depends=('python' 'gtk3' 'python-gobject' 'python-requests' 'python-notify2' 'python-dbus' 'python-sqlalchemy')
 makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
-source=("archdex-$pkgver.tar.gz::https://github.com/Zelixo/ArchDex/archive/v$pkgver.tar.gz")
-sha256sums=('SKIP') # Replace with actual hash when releasing
+source=("archdex::git+https://github.com/Zelixo/ArchDex.git")
+sha256sums=('SKIP')
 
 build() {
-  cd "ArchDex-$pkgver"
+  cd "archdex"
   python -m build --wheel --no-isolation
 }
 
 package() {
-  cd "ArchDex-$pkgver"
+  cd "archdex"
   python -m installer --destdir="$pkgdir" dist/*.whl
   
   # Install desktop file and icons if we had them
