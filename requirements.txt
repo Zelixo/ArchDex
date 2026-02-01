@@ -1,0 +1,5 @@
+PyGObject
+requests
+notify2
+dbus-python
+SQLAlchemy
