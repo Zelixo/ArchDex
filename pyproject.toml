@@ -32,7 +32,7 @@ dependencies = [
 archdex = "src.main:main"
 
 [tool.setuptools.package-data]
-"src" = ["assets/**/*", "data/**/*"]
+"*" = ["assets/icons/*.png", "data/*.db"]
 
 [tool.setuptools.packages.find]
 where = ["."]

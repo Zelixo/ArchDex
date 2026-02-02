@@ -48,12 +48,36 @@ TYPE_COLORS = {
     "fairy": "#D685AD",
 }
 
-# Get the absolute path to the project root (where assets directory is)
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+def get_asset_path(asset_relative_path):
+    """Get absolute path to resource, works for dev and for PyInstaller/package"""
+    import sys
+    from pathlib import Path
+    
+    # Try package-relative path first (when installed)
+    try:
+        from importlib import resources
+        # This works if assets is treated as a package, but it's not.
+        # So we use the file-relative path but more robustly.
+        pass
+    except ImportError:
+        pass
+
+    # Base directory of the current file
+    base_path = Path(__file__).parent.parent.parent
+    
+    # Check if we are running in a site-packages/archdex/ui directory
+    # or in the source tree src/ui
+    asset_path = base_path / asset_relative_path
+    if asset_path.exists():
+        return str(asset_path)
+        
+    # Fallback for some packaging layouts
+    return str(Path(sys.prefix) / "share" / "archdex" / asset_relative_path)
+
 CATEGORY_ICONS = {
-    "physical": os.path.join(PROJECT_ROOT, "assets", "icons", "physical.png"),
-    "special": os.path.join(PROJECT_ROOT, "assets", "icons", "special.png"),
-    "status": os.path.join(PROJECT_ROOT, "assets", "icons", "status.png"),
+    "physical": get_asset_path("assets/icons/physical.png"),
+    "special": get_asset_path("assets/icons/special.png"),
+    "status": get_asset_path("assets/icons/status.png"),
 }
 
 VERSION_GROUPS = {
