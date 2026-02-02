@@ -197,6 +197,7 @@ def update_pokemon_data(session, pokemon_id, pokemon_url=None, name=None):
 
     # Update abilities
     session.query(PokemonAbility).filter_by(pokemon_id=pokemon.id).delete()
+    seen_abilities_for_pokemon = set()
     for ability_entry in pokemon_details["abilities"]:
         ability_name = ability_entry["ability"]["name"]
         ability = session.query(Ability).filter_by(name=ability_name).first()
@@ -213,7 +214,10 @@ def update_pokemon_data(session, pokemon_id, pokemon_url=None, name=None):
             ability = Ability(name=ability_name, description=description, short_description=short_description)
             session.add(ability)
             session.flush()
-        session.add(PokemonAbility(pokemon=pokemon, ability=ability, is_hidden=ability_entry.get("is_hidden", False), slot=ability_entry.get("slot")))
+        
+        if ability.id not in seen_abilities_for_pokemon:
+            session.add(PokemonAbility(pokemon=pokemon, ability=ability, is_hidden=ability_entry.get("is_hidden", False), slot=ability_entry.get("slot")))
+            seen_abilities_for_pokemon.add(ability.id)
 
     # Update moves
     session.query(PokemonMove).filter_by(pokemon_id=pokemon.id).delete()
