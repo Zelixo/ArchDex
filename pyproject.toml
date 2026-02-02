@@ -32,11 +32,14 @@ dependencies = [
 archdex = "src.main:main"
 
 [tool.setuptools.package-data]
-"*" = ["assets/icons/*.png", "data/*.db"]
+"*" = ["data/*.db"]
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["src*"]
+
+[tool.setuptools.data-files]
+"share/archdex/assets/icons" = ["assets/icons/physical.png", "assets/icons/special.png", "assets/icons/status.png"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
